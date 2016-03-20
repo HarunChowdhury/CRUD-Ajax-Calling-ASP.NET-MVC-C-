@@ -1,0 +1,341 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>   Person  </title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-theme.css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    &nbsp;nbsp;
+
+    <div class="col-lg-8">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>Employee Details </h3>
+            </div>
+            <div class="panel-body">
+
+                <div class="form-group col-lg-4">
+                    <label>Employee ID</label>
+                    <input type="number" name="TelephoneNo" id="EmpID" class="form-control" placeholder="1234567890" />
+                </div>
+
+                <div class="form-group col-lg-4">
+                    <label>First Name</label>
+                    <input type="text" name="FirstName" id="FirstName" class="form-control" placeholder="First Name" required="" />
+                </div>
+
+                <div class="form-group col-lg-4 ">
+                    <label>Surname</label>
+                    <input type="text" name="Surname" id="Surname" class="form-control" placeholder="Last Name" required="" />
+                </div>
+
+                <div class="form-group col-lg-4">
+                    <label>Email ID</label>
+                    <input type="email" name="EmailId" id="Email" class="form-control" placeholder="abc@someone.com" required="" />
+                </div>
+
+                <div class="form-group col-lg-6">
+                    <label>Date of Birth </label>
+                    <input type="text" name="Dob" id="DOB" min="1920-01-02" class="form-control datepicker" placeholder="DD/MM/Year" required="" />
+                </div>
+
+                <div class="form-group col-lg-6">
+                    <label>Image  </label>
+                    <input type="file" name="Photos" id="img"   />
+                </div>
+
+
+                <div class="form-group col-lg-8">
+                    <div style="float: right">
+                        <input id="click" class="btn btn-success" type="submit" value="Save">
+                        <button  id="getAll" class="btn btn-primary" onclick="return _getAll();" type="button">Show Data </button>
+                        @*<input value="Edit" id="edit" class="btn btn-primary" type="submit">*@
+                        @*<input class="btn btn-primary" name="submitButton" id="delete" value="Delete" type="submit">*@
+                        <input class="btn btn-primary" name="submitButton" id="btnEdit" value="Update" type="submit">
+                    </div>
+                </div>
+                
+                
+                
+
+                <div id="list" >
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID </th>
+                                <th> First Name</th>
+                                <th>Last Name </th>
+                                <th> Email</th>
+                                <th> Date Of Birth</th>
+                                <th> Action</th>
+                                
+                            </tr>
+                        </thead>
+                        
+                        <tbody class="tbody">
+                            
+                        </tbody>
+
+                    </table>
+
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery-2.2.1.min.js"></script>
+
+    <script type="text/javascript">
+
+
+        function getById(id) {
+            $.ajax({
+                url: "/Employee/Get/"+id,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=stf-8",
+                data: id,
+                success: function (result) {
+
+                    $('#EmpID').val(result.EmpID);
+                    $('#FirstName').val(result.FirstName);
+                    $('#Surname').val(result.Surname);
+                    $('#Email').val(result.Email);
+                    $('#DOB').val(result.DOB);
+                },
+                error: function () {
+
+                    alert("Faild Please try later!!!");
+                }
+
+            });
+
+            return false;
+        }
+
+        function DeleteRecord(id) {
+            
+
+
+            $.ajax({
+                url: "/Employee/DeleteRecord/"+id,
+                type: "POST",
+                // dataType: "json",
+                //contentType: "application/json; charset=stf-8",
+                data: id,
+                success: function (data) {
+                    alert("Delete Successfully");
+                    window.location.reload();
+                }
+
+
+            });
+            
+        }
+
+
+
+        $(document).ready(function () {
+            
+
+
+
+            //Save Block Start
+
+            $('#click').on('click', function () {
+
+
+                var personData = {
+
+                    EmpID: $('#EmpID').val(),
+                    FirstName: $('#FirstName').val(),
+                    Surname: $('#Surname').val(),
+                    Email: $('#Email').val(),
+                    DOB: $('#DOB').val(),
+                   // Photos: $('#img').val()
+
+                };
+
+                $.ajax({
+                    url: "/Employee/Index/",
+                    type: "POST",
+                    // dataType: JSON,
+                    //  contentType: "application/json; charset=stf-8",
+                    data: personData,
+                    success: function (data) {
+                        alert("Save Successfully");
+                        window.location.reload();
+                    }
+
+
+                });
+
+            });
+
+            //Save Block Close
+
+
+
+
+
+            // Nicher  #getAll holo Display Button ar kaj Click korlei Table a Data Show korbe 
+
+            $('#getAll').on('click', function() {
+
+                        $.ajax({
+                            url: "/Employee/GetAllP/",
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=stf-8",
+                            data: "",
+                            success: function (result) {
+
+                                var html = '';
+                                $.each(result, function(key, item) {
+
+                                    html += '<tr>';
+                                    html += '<td>' + item.EmpID + '</td>';
+                                    html += '<td>' + item.FirstName + '</td>';
+                                    html += '<td>' + item.Surname + '</td>';
+                                    html += '<td>' + item.Email + '</td>';
+                                    html += '<td>' + item.DOB + '</td>';
+                                  
+                                    html += '<td><a href="#" onclick="getById(' + item.EmpID + ') " >Edit</a>  &nbsp; &nbsp;| &nbsp; &nbsp;<a href="#" onclick="DeleteRecord(' + item.EmpID + ') " >Delete</a></td>';
+                                  
+                                    html += '</tr>';
+                                    
+
+
+                                   
+                                });
+                                
+                               
+                             
+                                $('#list tbody').html(html);
+                            },
+
+                            error: function () {
+
+                                alert("Faild Please try later!!!");
+                            }
+
+
+            
+
+                        });
+                
+
+
+
+
+            });
+
+
+
+            
+
+
+            /// Nicher #btnEdit ata Holo oi input text Box ar Data gulo niye id confirm kore Database a row Update korbe 
+
+            $('#btnEdit').on('click', function () {
+
+
+                var personData = {
+
+                    EmpID: $('#EmpID').val(),
+                    FirstName: $('#FirstName').val(),
+                    Surname: $('#Surname').val(),
+                    Email: $('#Email').val(),
+                    DOB: $('#DOB').val()
+
+                };
+
+                $.ajax({
+                    url: "/Employee/UpdateData/",
+                    type: "POST",
+                   // dataType: "json",
+                    //contentType: "application/json; charset=stf-8",
+                    data: personData,
+                    success: function (data) {
+                        alert("Update Successfully");
+                        window.location.reload();
+                    }
+
+
+                });
+
+            });
+           
+
+
+            // Nicher  function ta holo Edit a click korle oi table ar row ta amar input text Box gulote show korbe  
+           
+            //Delete Block Start
+
+            $('#delete').on('click', function () {
+
+
+                var personData = {
+
+                    EmpID: $('#EmpID').val(),
+                    FirstName: $('#FirstName').val(),
+                    Surname: $('#Surname').val(),
+                    Email: $('#Email').val(),
+                    DOB: $('#DOB').val()
+
+                };
+
+                $.ajax({
+                    url: "/Employee/DeleteRecord/",
+                    type: "POST",
+                    // dataType: "json",
+                    //contentType: "application/json; charset=stf-8",
+                    data: personData,
+                    success: function (data) {
+                        alert("Delete Successfully");
+                        window.location.reload();
+                    }
+
+
+                });
+
+            });
+
+            //Delete Block Close
+            
+
+
+
+
+        });
+
+
+    </script>
+
+
+
+
+</body>
+
+</html>
+
+
+
+
+
